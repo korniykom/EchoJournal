@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.korniykom.echojournal.R
 
 @Composable
@@ -28,4 +29,12 @@ fun EchosRecordFloatingActionButton(
             contentDescription = stringResource(R.string.add_new_entry)
         )
     }
+}
+
+@Preview
+@Composable
+private fun EchosRecordFloatingActionButtonPreview() {
+    EchosRecordFloatingActionButton(
+        onClick = {}
+    )
 }

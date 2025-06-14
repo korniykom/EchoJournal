@@ -44,12 +44,11 @@ fun MultiChoiceChip(
     modifier: Modifier = Modifier,
     leadingContent: (@Composable () -> Unit)? = null
 ) {
-    val containerColor =  if(isHighlighted) {
+    val containerColor = if(isHighlighted) {
         MaterialTheme.colorScheme.surface
     } else {
         Color.Transparent
     }
-
     val borderColor = if(isHighlighted) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
@@ -68,7 +67,7 @@ fun MultiChoiceChip(
             )
             .clip(CircleShape)
             .border(
-                width = .5.dp,
+                width = 0.5.dp,
                 color = borderColor,
                 shape = CircleShape
             )
@@ -78,7 +77,7 @@ fun MultiChoiceChip(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.Center)
@@ -121,15 +120,9 @@ private fun MultiChoiceChipPreview() {
             onClick = {},
             isClearVisible = true,
             onClearButtonClick = {},
-            isHighlighted = true,
+            isHighlighted = false,
             isDropDownVisible = true,
             dropDownMenu = {},
-            leadingContent = {
-                Icon(
-                imageVector = Icons.Default.Build,
-                contentDescription = null
-            )}
         )
     }
-
 }

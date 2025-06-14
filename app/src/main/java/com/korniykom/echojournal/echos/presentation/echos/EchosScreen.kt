@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.korniykom.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import com.korniykom.echojournal.core.presentation.designsystem.theme.bgGradient
+import com.korniykom.echojournal.echos.presentation.echos.components.EchoFilterRow
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosEmptyBackground
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosRecordFloatingActionButton
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosTopBar
@@ -36,7 +37,7 @@ fun EchosRoot(
 @Composable
 fun EchosScreen(
     state: EchosState,
-    onAction: (EchosActions) -> Unit
+    onAction: (EchosActions) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -62,6 +63,18 @@ fun EchosScreen(
                 )
                 .padding(innerPadding)
         ) {
+            EchoFilterRow(
+                moodChipContent = state.moodChipContent,
+                hasActiveMoodFilters = state.hasActiveMoodFilters,
+                selectedEchoFilterChip = state.selectedEchoFilterChip,
+                moods = state.moods,
+                topicChipTitle = state.topicChipTitle,
+                hasActiveTopicFilters = state.hasActiveTopicFilters,
+                topics = state.topics,
+                onAction = onAction,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
             when {
                 state.isLoadingData -> {
                     CircularProgressIndicator(
@@ -72,12 +85,17 @@ fun EchosScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
+
                 !state.hasEchosRecorded -> {
                     EchosEmptyBackground(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                     )
+                }
+
+                else -> {
+
                 }
             }
         }
@@ -86,14 +104,14 @@ fun EchosScreen(
 
 @Preview
 @Composable
-private fun EchosScreenPreview() {
+private fun Preview() {
     EchoJournalTheme {
         EchosScreen(
             state = EchosState(
                 isLoadingData = false,
                 hasEchosRecorded = false
-            )
-
-        ) { }
+            ),
+            onAction = {}
+        )
     }
 }

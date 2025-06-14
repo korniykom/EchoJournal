@@ -1,5 +1,6 @@
 package com.korniykom.echojournal.core.presentation.utils
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -39,6 +40,12 @@ sealed interface UiText {
             is Dynamic -> value
             is StringResource -> stringResource(id, *args)
         }
+    }
 
+    fun asString(context: Context): String {
+        return when (this) {
+            is Dynamic -> value
+            is StringResource -> context.getString(id, *args)
+        }
     }
 }

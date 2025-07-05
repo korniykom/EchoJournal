@@ -23,8 +23,114 @@ import com.korniykom.echojournal.core.presentation.designsystem.theme.MoodPrimar
 import com.korniykom.echojournal.core.presentation.designsystem.theme.MoodPrimary35
 import com.korniykom.echojournal.core.presentation.designsystem.theme.MoodPrimary80
 import com.korniykom.echojournal.core.presentation.utils.formatMMSS
+import com.korniykom.echojournal.echos.presentation.echos.models.TrackSizeInfo
 import com.korniykom.echojournal.echos.presentation.models.MoodUi
 import com.korniykom.echojournal.echos.presentation.models.PlaybackState
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
+
+@Composable
+fun EchoMoodPlayer(
+    moodUi: MoodUi?,
+    playbackState: PlaybackState,
+    playerProgress: () -> Float,
+    durationPlayed: Duration,
+    totalPlaybackDuration: Duration,
+    powerRatios: List<Float>,
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit,
+    onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
+    modifier: Modifier = Modifier,
+    amplitudeBarWidth: Dp = 5.dp,
+    amplitudeBarSpacing: Dp = 4.dp,
+) {
+    val iconTint = when (moodUi) {
+        null -> MoodPrimary80
+        else -> moodUi.colorSet.vivid
+    }
+    val trackFillColor = when (moodUi) {
+        null -> MoodPrimary80
+        else -> moodUi.colorSet.vivid
+    }
+    val backgroundColor = when (moodUi) {
+        null -> MoodPrimary25
+        else -> moodUi.colorSet.faded
+    }
+    val trackColor = when (moodUi) {
+        null -> MoodPrimary35
+        else -> moodUi.colorSet.desaturated
+    }
+    val formattedDurationText = remember(durationPlayed, totalPlaybackDuration) {
+        "${durationPlayed.formatMMSS()}/${totalPlaybackDuration.formatMMSS()}"
+    }
+
+    Surface(
+        shape = CircleShape,
+        color = backgroundColor,
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            EchoPlaybackButton(
+                playbackState = playbackState,
+                onPlayClick = onPlayClick,
+                onPauseClick = onPauseClick,
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = iconTint
+                )
+            )
+            EchoPlayBar(
+                amplitudeBarWidth = amplitudeBarWidth,
+                amplitudeBarSpacing = amplitudeBarSpacing,
+                powerRatios = powerRatios,
+                trackColor = trackColor,
+                trackFillColor = trackFillColor,
+                playerProgress = playerProgress,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        vertical = 10.dp,
+                        horizontal = 8.dp
+                    )
+                    .fillMaxHeight()
+            )
+            Text(
+                text = formattedDurationText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun EchoMoodPlayerPreview() {
+    EchoJournalTheme {
+        val ratios = remember {
+            (1..30).map {
+                Random.nextFloat()
+            }
+        }
+        EchoMoodPlayer(
+            moodUi = MoodUi.STRESSED,
+            playerProgress = { 0.3f },
+            playbackState = PlaybackState.PAUSED,
+            durationPlayed = 125.seconds,
+            totalPlaybackDuration = 250.seconds,
+            powerRatios = ratios,
+            onPauseClick = {},
+            onPlayClick = {},
+            modifier = Modifier
+                .fillMaxWidth(),
+            onTrackSizeAvailable = {}
+        )
+    }
+}

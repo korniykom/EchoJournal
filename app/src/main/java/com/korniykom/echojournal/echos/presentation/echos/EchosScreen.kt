@@ -1,5 +1,9 @@
 package com.korniykom.echojournal.echos.presentation.echos
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,16 +21,35 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.korniykom.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import com.korniykom.echojournal.core.presentation.designsystem.theme.bgGradient
+import com.korniykom.echojournal.core.presentation.utils.ObserveAsEvents
 import com.korniykom.echojournal.echos.presentation.echos.components.EchoFilterRow
+import com.korniykom.echojournal.echos.presentation.echos.components.EchoList
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosEmptyBackground
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosRecordFloatingActionButton
 import com.korniykom.echojournal.echos.presentation.echos.components.EchosTopBar
+import com.korniykom.echojournal.echos.presentation.echos.models.AudioCaptureMethod
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EchosRoot(
-    viewModel: EchosViewModel = viewModel()
+    viewModel: EchosViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val permisionLauncer = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if(isGranted && state.currentCaptureMethod == AudioCaptureMethod.STANDART) {
+            viewModel.onAction(EchosActions.OnAudioPermissionGranted)
+        }
+    }
+    ObserveAsEvents(viewModel.events) { event ->
+        when(event) {
+            is EchoEvent.RequestAudioPermission -> {
+                permisionLauncer.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
 
     EchosScreen(
         state = state,
@@ -95,7 +118,16 @@ fun EchosScreen(
                 }
 
                 else -> {
-
+                    EchoList(
+                        sections = state.echoDaySection,
+                        onPlayClick = {onAction(EchosActions.OnPlayEchoClick(it))},
+                        onPauseClick = {
+                            onAction(EchosActions.OnPauseClick)
+                        },
+                        onTrackSizeAvailable = { trackSize ->
+                            onAction(EchosActions.OnTrackSizeAvailable(trackSize))
+                        }
+                    )
                 }
             }
         }
